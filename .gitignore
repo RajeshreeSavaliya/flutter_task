@@ -44,3 +44,5 @@ app.*.map.json
 pubspec.lock
 .metadata
 test
+Debug.xcconfig
+Release.xcconfig
