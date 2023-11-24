@@ -11,6 +11,7 @@ Future<void> main() async {
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(AlbumsAdapter());
   Hive.registerAdapter(PhotosAdapter());
+  await Hive.openBox("Photos");
   runApp(const MyApp());
 }
 
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const AlbumScreen(),
+      home: AlbumScreen(),
     );
   }
 }
