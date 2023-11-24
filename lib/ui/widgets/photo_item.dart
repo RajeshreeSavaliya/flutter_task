@@ -14,7 +14,7 @@ class PhotoItem extends StatelessWidget {
       child: CachedNetworkImage(
         height: MediaQuery.of(context).size.width / 3.5,
         width: MediaQuery.of(context).size.width / 3.5,
-        imageUrl: "http://via.placeholder.com/350x150",
+        imageUrl: photoUrl,
         fit: BoxFit.cover,
         placeholder: (context, url) => const CircularProgressIndicator(),
         errorWidget: (context, url, error) => const Icon(Icons.error),

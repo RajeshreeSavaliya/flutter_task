@@ -1,8 +1,15 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_task_m/blocs/albums/albums_bloc.dart';
+import 'package:flutter_task_m/blocs/network/network_bloc.dart';
+import 'package:flutter_task_m/blocs/network/network_event.dart';
+import 'package:flutter_task_m/blocs/network/network_state.dart';
+import 'package:flutter_task_m/blocs/photos/photos_bloc.dart';
 import 'package:flutter_task_m/data/repositories/repository.dart';
 import 'package:flutter_task_m/ui/widgets/album_item.dart';
+
+import '../../data/models/photos.dart';
 
 class AlbumScreen extends StatefulWidget {
   const AlbumScreen({super.key});
@@ -12,54 +19,95 @@ class AlbumScreen extends StatefulWidget {
 }
 
 class _AlbumScreenState extends State<AlbumScreen> {
-
-  AlbumsBloc _albumsBloc = AlbumsBloc(Repository());
+  final AlbumsBloc _albumsBloc = AlbumsBloc(Repository());
+  final PhotosBloc _photosBloc = PhotosBloc(Repository());
 
   @override
   void initState() {
     _albumsBloc.add(FetchAlbums());
+    _photosBloc.add(FetchPhotos());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => _albumsBloc,
-      child: Scaffold(
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => _albumsBloc,
+          ),
+          BlocProvider(
+            create: (_) => _photosBloc,
+          ),
+          BlocProvider(create: (_) => NetworkBloc()..add(NetworkObserve()))
+        ],
+        child: Scaffold(
           appBar: AppBar(
             title: const Text("Albums"),
             centerTitle: true,
           ),
-          body: BlocConsumer<AlbumsBloc, AlbumsState>(
-            listener: (context, state) {},
+          body: BlocBuilder<NetworkBloc, NetworkState>(
             builder: (context, state) {
-              print("bloc states : $state");
-              if (state is AlbumsLoaded) {
-                return ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 12, bottom: 12),
-                      child: AlbumItem(index: index, photosList: [
-                        "https://via.placeholder.com/600/92c952",
-                        "https://via.placeholder.com/600/92c952",
-                        "https://via.placeholder.com/600/92c952",
-                        "https://via.placeholder.com/600/92c952",
-                        "https://via.placeholder.com/600/92c952",
-                      ]),
-                    );
-                  },
-                );
-              } else if (state is AlbumsLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is AlbumsError) {
-                return const Text("Something went wrong");
+              if (state is NetworkFailure) {
+                return const Text("No Internet Connection");
+              } else if (state is NetworkSuccess) {
+                return networkAvailableState();
               } else {
-                return const Center(child: CircularProgressIndicator());
-                ;
+                return const SizedBox.shrink();
               }
             },
-          )),
+          ),
+        ));
+  }
+
+  Widget networkAvailableState() {
+    return BlocConsumer<AlbumsBloc, AlbumsState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        print("bloc states : $state");
+        if (state is AlbumsLoaded) {
+          return BlocConsumer<PhotosBloc, PhotosState>(listener: (context, state) {
+            // TODO: implement listener
+          }, builder: (context, photosState) {
+            print("photo states : $photosState");
+            if (photosState is PhotosLoaded) {
+              return CarouselSlider.builder(
+                  itemCount: state.albums.length,
+                  itemBuilder: (BuildContext context, int index, int pageViewIndex) {
+                    List<Photos> photos = photosState.photos.where((element) => element.albumId == state.albums[index].id).toList();
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 12, bottom: 12),
+                      child: AlbumItem(
+                        index: index,
+                        photosList: photos,
+                        albumTitle: state.albums[index].title,
+                      ),
+                    );
+                  },
+                  options: CarouselOptions(
+                    height: MediaQuery.of(context).size.height,
+                    viewportFraction: 0.3,
+                    initialPage: 0,
+                    disableCenter: true,
+                    enableInfiniteScroll: true,
+                    scrollDirection: Axis.vertical,
+                  ));
+            } else if (state is AlbumsLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is AlbumsError) {
+              return const Text("Something went wrong");
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          });
+        } else if (state is AlbumsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is AlbumsError) {
+          return const Text("Something went wrong");
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

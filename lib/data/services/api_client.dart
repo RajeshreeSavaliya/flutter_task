@@ -17,9 +17,10 @@ class ApiClient {
   ApiClient();
 
   ///GET api call
-  Future<dynamic> apiCallGet(String url, {String query = ""}) async {
+  Future apiCallGet(String url, {String query = ""}) async {
     var responseJson;
     var getUrl;
+    final response;
 
     if (query.isNotEmpty) {
       getUrl = '$BASE_URL$url/$query';
@@ -32,21 +33,24 @@ class ApiClient {
     };
 
     try {
-      final response = await httpClient
+       response = await httpClient
           .get(
             Uri.parse(getUrl),
-            headers: headers,
+            // headers: headers,
           )
           .timeout(const Duration(seconds: 60));
-      responseJson = await _response(response);
+      // responseJson = await _response(response);
+      print("json.decode(response.body)-");
+      print(json.decode(response.body));
+
+      responseJson = response.body;
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }
     return responseJson;
   }
 
-  Future<dynamic> _response(http.Response response,
-      {bool showSuccessDialog = false}) async {
+  Future<dynamic> _response(http.Response response, {bool showSuccessDialog = false}) async {
     print("Api response : ${response.body}");
 
     switch (response.statusCode) {
@@ -61,9 +65,7 @@ class ApiClient {
         final status = responseJson["status"] == 1;
         final message = responseJson["message"];
 
-
         return responseJson;
-
 
       case 400:
         var responseJson = json.decode(response.body);
@@ -95,8 +97,7 @@ class ApiClient {
         if (message != null) {
           throw ServerErrorException(message.toString());
         }
-        throw FetchDataException(
-            'Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
+        throw FetchDataException('Error occurred while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
 }
