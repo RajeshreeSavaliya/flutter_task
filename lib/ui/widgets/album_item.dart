@@ -25,7 +25,10 @@ class AlbumItem extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: Text(
             albumTitle!,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, ),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
             maxLines: 1,
           ),
         ),
@@ -33,23 +36,21 @@ class AlbumItem extends StatelessWidget {
           height: 12,
         ),
         SizedBox(
-          height: MediaQuery.of(context).size.width / 3.5,
-
-          child: CarouselSlider.builder(
-              itemCount: photosList.length,
-              itemBuilder: (BuildContext context, int index, int pageViewIndex) {
-                return PhotoItem(index: index, photoUrl: photosList[index].url?? "");
-              },
-              options: CarouselOptions(
-                height: MediaQuery.of(context).size.width / 3.5,
-                viewportFraction: 0.3,
-                initialPage: 0,
-                disableCenter: true,
-                enableInfiniteScroll: true,
-                reverse: true,
-                scrollDirection: Axis.horizontal,
-              ))
-        ),
+            height: MediaQuery.of(context).size.width / 3.5,
+            child: CarouselSlider.builder(
+                itemCount: photosList.length,
+                itemBuilder: (BuildContext context, int index, int pageViewIndex) {
+                  return PhotoItem(index: index, photoUrl: photosList[index].url ?? "");
+                },
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.width / 3.5,
+                  viewportFraction: 0.3,
+                  initialPage: 0,
+                  disableCenter: true,
+                  enableInfiniteScroll: true,
+                  reverse: true,
+                  scrollDirection: Axis.horizontal,
+                ))),
         const SizedBox(
           height: 24,
         ),

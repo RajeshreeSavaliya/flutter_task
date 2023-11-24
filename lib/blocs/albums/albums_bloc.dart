@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_task_m/data/repositories/repository.dart';
 import '../../data/models/albums.dart';
+
 part 'albums_event.dart';
+
 part 'albums_state.dart';
 
 class AlbumsBloc extends Bloc<AlbumsEvent, AlbumsState> {
@@ -15,6 +17,9 @@ class AlbumsBloc extends Bloc<AlbumsEvent, AlbumsState> {
       if (event is FetchAlbums) {
         emit(AlbumsLoading());
         albums = await repository.getAlbums();
+        emit(AlbumsLoaded(albums));
+      } else if (event is FetchAlbumsFromDB) {
+        albums = await repository.getAlbumsFromDB();
         emit(AlbumsLoaded(albums));
       }
     });

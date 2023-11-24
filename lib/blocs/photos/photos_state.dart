@@ -9,11 +9,12 @@ abstract class PhotosState extends Equatable {
 class PhotosInitial extends PhotosState {}
 
 class PhotosLoading extends PhotosState {}
+
 class PhotosError extends PhotosState {}
 
 @immutable
 class PhotosLoaded extends PhotosState {
   final List<Photos> photos;
+
   PhotosLoaded(this.photos);
 }
-

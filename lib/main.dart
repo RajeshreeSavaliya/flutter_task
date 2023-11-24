@@ -11,7 +11,6 @@ Future<void> main() async {
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(AlbumsAdapter());
   Hive.registerAdapter(PhotosAdapter());
-  await Hive.openBox("Photos");
   runApp(const MyApp());
 }
 

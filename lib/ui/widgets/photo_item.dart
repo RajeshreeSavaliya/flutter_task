@@ -16,7 +16,7 @@ class PhotoItem extends StatelessWidget {
         width: MediaQuery.of(context).size.width / 3.5,
         imageUrl: photoUrl,
         fit: BoxFit.cover,
-        placeholder: (context, url) => const CircularProgressIndicator(),
+        placeholder: (context, url) => const SizedBox(height: 32, width: 32, child: CircularProgressIndicator()),
         errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     );

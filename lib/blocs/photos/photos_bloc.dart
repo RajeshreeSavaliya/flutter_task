@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_task_m/data/models/photos.dart';
 import 'package:flutter_task_m/data/repositories/repository.dart';
-import 'package:hive/hive.dart';
 part 'photos_event.dart';
 
 part 'photos_state.dart';
@@ -17,11 +16,11 @@ class PhotosBloc extends Bloc<PhotosEvent, PhotosState> {
       if (event is FetchPhotos) {
         emit(PhotosLoading());
         photos = await repository.getPhotos();
-var images =
-
+        emit(PhotosLoaded(photos));
+      } else if (event is FetchPhotosFromDB) {
+        photos = await repository.getPhotosFromDB();
         emit(PhotosLoaded(photos));
       }
     });
   }
-
 }

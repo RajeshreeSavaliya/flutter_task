@@ -18,10 +18,8 @@ class Photos {
   String? url;
   @HiveField(5)
   String? thumbnailUrl;
-  @HiveField(6)
-  String? imageFile;
 
-  Photos({this.albumId, this.id, this.title, this.url, this.thumbnailUrl, this.imageFile});
+  Photos({this.albumId, this.id, this.title, this.url, this.thumbnailUrl});
 
   Photos copyWith({
     int? albumId,
@@ -55,7 +53,6 @@ class Photos {
       };
 }
 
-// Generated adapter code
 @HiveType(typeId: 0)
 class PhotosAdapter extends TypeAdapter<Photos> {
   @override
@@ -66,9 +63,9 @@ class PhotosAdapter extends TypeAdapter<Photos> {
     return Photos(
       albumId: reader.read(),
       id: reader.read(),
+      title: reader.read(),
       url: reader.read(),
       thumbnailUrl: reader.read(),
-      imageFile: reader.read(),
     );
   }
 
@@ -79,6 +76,5 @@ class PhotosAdapter extends TypeAdapter<Photos> {
     writer.write(obj.title);
     writer.write(obj.url);
     writer.write(obj.thumbnailUrl);
-    writer.write(obj.imageFile);
   }
 }
